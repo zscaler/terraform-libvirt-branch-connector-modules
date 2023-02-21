@@ -1,0 +1,461 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+usage()
+{
+    echo "Usage: $0 <up|destroy>"
+    exit 1
+}
+
+if [ $# -ne 1 ] ; then
+    usage
+else
+    case $1 in
+      up|destroy|do)
+          oper=$1
+      ;;
+      *)
+          usage
+      ;;
+    esac
+fi
+
+if [[ "$oper" == "up" ]]; then
+    # shellcheck disable=SC2153
+    if [ -z "$dtype" ]; then
+
+    while true; do
+     read -r -p "Deployment Type: ( bc | bc_ha | bc_ac | bc_ha_ac ): " dtype
+
+    case $dtype in
+      bc|bc_ha|bc_ac|bc_ha_ac)
+          echo "Deployment Type: ${dtype}"
+          break
+      ;;
+      *)
+          echo "Invalid Deployment Type: ${dtype}"
+      ;;
+    esac
+  done
+    else
+      dtype=$dtype
+    fi
+fi
+
+
+echo "Discovering processor architecture..."
+archdetect=$(uname -m)
+
+tversion=1.1.9
+echo "Detecting OS..."
+if [[ "$OSTYPE" == "linux"* ]]; then
+    os_str=linux
+    arch=amd64
+    ostype=Linux
+elif [[ "$OSTYPE" == "darwin"* && $archdetect == "arm64" ]]; then
+    os_str=darwin
+    arch=arm64
+    ostype=MacOS_arm64
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    os_str=darwin
+    arch=amd64
+    ostype=MacOS
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    os_str=freebsd
+    arch=amd64
+    ostype=FreeBSD
+    echo "FreeBSD support coming soon..."
+    exit 1
+else
+    echo "Unsupported OS: $OSTYPE"
+    exit 1
+fi
+echo "OS is $ostype"
+
+dir=bin
+echo "Creating a local $dir directory if not present..."
+if [[ ! -e $dir ]]; then
+    mkdir $dir
+elif [[ ! -d $dir ]]; then
+    echo "$dir already exists but is not a directory" 1>&2
+    exit 1
+fi
+
+echo "Checking for qcow2 file..."
+# if .zsecrc is not present we'll assume that libvirt env was never set
+if [[ "$oper" == "up" && ! -e ./.zsecrc ]]; then
+for file in ./$dtype/bootstrap/*.qcow2; 
+do 
+qcow2_lookup=$(basename ./$dtype/bootstrap/*.qcow2)
+if [[ $qcow2_lookup == "*.qcow2" ]]; then
+echo "Branch Connector qcow2 file appears to be missing from directory ${dtype}/bootstrap. Make sure file exists and re-run zsec up..."
+exit 1
+else
+while true; do
+read -r -p "Branch Connector qcow2 file named ${qcow2_lookup} identified in directory ${dtype}/bootstrap. Is this the correct qcow2 to use? (yes/no): " qcow2_lookup_response
+case $qcow2_lookup_response in 
+	yes|y )
+    qcow2_name=$qcow2_lookup
+    echo "Using $qcow2_name for deployment..."
+    break
+    ;;
+    no|n )
+    read -r -p "Copy qcow2 file to $dtype/bootstrap/ and enter filename here (e.g. branchconnector.qcow2): " qcow2_manual_input
+    file_check=./$dtype/bootstrap/$qcow2_manual_input
+if test -f "$file_check"; then
+    echo "qcow2 name $qcow2_manual_input will be used..."
+    qcow2_name=$qcow2_manual_input
+else
+    echo "qcow2 does not exist by this name. Please confirm filename and path are correct and re-run zsec..."
+    exit 1    
+fi
+    break
+    ;;
+	* ) echo "invalid response. Please enter yes or no";;
+    esac
+done
+fi
+break
+done
+    echo "export TF_VAR_qcow2_name='${qcow2_name}'" > .zsecrc
+    
+    libvirt_uri_default="qemu:///system"
+    read -r -p "Enter Libvirt uri (Default: $libvirt_uri_default): " libvirt_uri_input
+    libvirt_uri=${libvirt_uri_input:-$libvirt_uri_default}
+    echo "export LIBVIRT_DEFAULT_URI='${libvirt_uri}'" >> .zsecrc
+
+
+if [[ "$dtype" == *"ac" ]]; then
+    echo "App Connector integrated deployment detected. Enter ZPA credentials..."
+    zpa_cloud_default=PRODUCTION
+    while true; do
+        read -r -p "Enter ZPA Cloud Name (PRODUCTION, BETA, GOV, or PREVIEW) [Default=$zpa_cloud_default]: " zpa_cloud_input
+        zpa_cloud=${zpa_cloud_input:-$zpa_cloud_default}
+        case $zpa_cloud in
+        PROD*|prod*|PRODUCTION|production)
+          echo "ZPA Cloud selected: PRODUCTION"
+          echo "export ZPA_CLOUD=\"PRODUCTION\"" >> .zspserc
+          break
+          ;;
+        BETA|beta|b|B)
+          echo "ZPA Cloud selected: BETA"
+          echo "export ZPA_CLOUD=\"BETA\"" >> .zspserc
+          break
+          ;;
+        GOV|gov|g|G)
+          echo "ZPA Cloud selected: GOV"
+          echo "export ZPA_CLOUD=\"GOV\"" >> .zspserc
+          break
+          ;;
+        PREVIEW|preview|pre*|PRE*)
+          echo "ZPA Cloud selected: PREVIEW"
+          echo "export ZPA_CLOUD=\"PREVIEW\"" >> .zspserc
+          break
+          ;;
+          *)
+          echo "Invalid Cloud. Supported values are PRODUCTION, BETA, GOV, or PREVIEW: ${zpa_cloud}."
+      ;;
+        esac
+    done
+    read -r -p "Enter ZPA Client ID: " zpa_client_id
+    echo "export ZPA_CLIENT_ID='$zpa_client_id'" >> .zsecrc
+    read -r -p "Enter ZPA Client Secret: " zpa_client_secret
+    echo "export ZPA_CLIENT_SECRET='$zpa_client_secret'" >> .zsecrc
+    read -r -p "Enter ZPA Customer ID: " zpa_customer_id
+    echo "export ZPA_CUSTOMER_ID='$zpa_customer_id'" >> .zsecrc
+
+    while true; do
+        read -r -p "Do you already have an App Connector provisioning key to use? [yes/no] " prov_key_response
+        case $prov_key_response in 
+	    yes|y ) 
+        read -r -p "Enter the name of your existing App Connector provisioning key: " byo_provisioning_key_name
+        echo "export TF_VAR_byo_provisioning_key=true" >> .zsecrc
+        echo "export TF_VAR_byo_provisioning_key_name=${byo_provisioning_key_name}" >> .zsecrc
+        break
+        ;;
+	    no|n )
+        echo "Terraform will be creating a new App Connector Group and provisioning key"
+        echo "Before proceeding, make sure you have entered all variable requirements from steps 1 and 2 in $dtype/terraform.tfvars"
+        break
+        ;;
+	    * ) echo "invalid response. Please enter yes or no";;
+        esac
+    done
+fi
+
+
+bc_instance_size_default=small
+while true; do
+    read -r -p "Enter BC Instance Size. Valid input = small, medium, or large. This needs to match the size chosen in the BC provisioning template [Default=$bc_instance_size_default]: " bc_instance_size_input
+    bc_instance_size=${bc_instance_size_input:-$bc_instance_size_default}
+    case $bc_instance_size in
+      small|medium|large)
+          echo "Branch Connector size: ${bc_instance_size}"
+          echo "export TF_VAR_bc_instance_size=${bc_instance_size}" >> .zsecrc
+          break
+      ;;
+      *)
+          echo "Invalid Branch Connector size: ${bc_instance_size}."
+      ;;
+    esac
+done
+
+if [[ "$dtype" != *"ha"* ]]; then
+    echo "Deployment type is $dtype. Input infrastructure details for one Branch Connector..."
+    echo "export TF_VAR_bc_count=1" >> .zsecrc
+elif [[ "$dtype" == *"ha"* ]]; then
+    echo "Deployment type is $dtype. Input infrastructure details for two Branch Connectors..."
+    echo "export TF_VAR_bc_count=2" >> .zsecrc
+fi    
+
+storage_pool_default=default
+read -r -p "Enter the name of the storage pool to upload qcow2 image to (Default is "$storage_pool_default"): " storage_pool_input
+storage_pool_name=${storage_pool_input:-$storage_pool_default}
+echo "export TF_VAR_pool_name='$storage_pool_name'" >> .zsecrc
+
+base_volume_name_default=zscaleros_bc_kvm
+read -r -p "Enter base volume name that will created to upload the qcow2 image to (Default is "$base_volume_name_default"): " base_volume_name_input
+base_volume_name=${base_volume_name_input:-$base_volume_name_default}
+echo "export TF_VAR_base_volume_name='$base_volume_name'" >> .zsecrc
+
+network_name_default=default
+read -r -p "Enter the name of the KVM Network to associate VM NICs to (Default is "$network_name_default"): " network_name_input
+network_name=${network_name_input:-$network_name_default}
+echo "export TF_VAR_network_name='$network_name'" >> .zsecrc
+
+network_static_default=no
+while true; do
+    read -r -p "IP Configuration - Do you need to statically configure interface details? (yes/no): " network_static_default_input
+    network_static=${network_static_default_input:-$network_static_default}
+    case $network_static in
+    yes|y )
+    echo "Configuring static interface IPs (this information must match what you provided in the Branch Connector provisioning template)..."
+    echo "export TF_VAR_static_management=true" >> .zsecrc
+    break
+    ;;
+    no|n )
+    echo "Interfaces will use DHCP..."
+    echo "export TF_VAR_static_management=false" >> .zsecrc
+    break
+    ;;
+	* ) echo "invalid response. Please enter yes or no";;
+    esac
+done
+
+model_type_default=virtio
+while true; do
+    read -r -p "Enter vSphere Network Interface Type (virtio or e1000) Default $model_type_default: " model_type_input
+    model_type=${model_type_input:-$model_type_default}
+    case $model_type in
+    virtio|e1000 )
+    echo "Configuring interfaces as $model_type"
+    echo "export TF_VAR_model_type=$model_type" >> .zsecrc
+    break
+    ;;
+	* ) echo "invalid response. Please enter virtio or e1000";;
+    esac
+done
+
+
+if [[ "$network_static" == "y"* && "$dtype" != *"ha"* ]]; then
+    echo "Configuring Branch Connector network information..."
+    read -r -p "Enter management IP address: " mgmt_ip
+    if [[ "$mgmt_ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+        echo "Management IP $mgmt_ip entered"
+        echo "export TF_VAR_mgmt_ip='[\"$mgmt_ip\"]'" >> .zsecrc
+    else
+        echo "IP format incorrect"
+        exit 1
+    fi 
+    if [[ "$dtype" == *"ac" ]]; then
+    read -r -p "Enter control IP address: " control_ip 
+    if [[ "$control_ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+        echo "Control IP $control_ip entered"
+        echo "export TF_VAR_control_ip='[\"$control_ip\"]'" >> .zsecrc
+    else
+        echo "IP format incorrect"
+        exit 1
+    fi 
+    fi
+    read -r -p "Enter Netmask: " netmask
+    echo "export TF_VAR_mgmt_netmask='$netmask'" >> .zsecrc
+    if [[ "$dtype" == *"ac" ]]; then
+    echo "export TF_VAR_control_netmask='$netmask'" >> .zsecrc
+    fi
+    read -r -p "Enter Default Gateway: " gateway
+    echo "export TF_VAR_mgmt_gateway='$gateway'" >> .zsecrc
+    if [[ "$dtype" == *"ac" ]]; then
+    echo "export TF_VAR_control_gateway='$gateway'" >> .zsecrc
+    fi
+    read -r -p "Enter Primary DNS Server IP: " dns_primary
+    read -r -p "Enter Secondary DNS Server IP: " dns_secondary
+    echo "export TF_VAR_mgmt_dns_primary='$dns_primary'" >> .zsecrc
+    echo "export TF_VAR_mgmt_dns_secondary='$dns_secondary'" >> .zsecrc
+    read -r -p "Enter DNS suffix (e.g. corp.com): " dns_suffix
+    echo "export TF_VAR_dns_suffix='$dns_suffix'" >> .zsecrc
+
+    read -r -p "Enter BC Provisioning URL (E.g. connector.zscalerbeta.net/api/v1/provUrl?name=kvm_prov_url): " bc1_vm_prov_url
+    echo "Provisioning URL entered is: $bc1_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
+    echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\"]'" >> .zsecrc
+    read -r -p "Enter BC provisioning Username: " bc_username
+    echo "export TF_VAR_bc_username=${bc_username}" >> .zsecrc
+    read -r -p "Enter BC provisioning Password: " bc_password
+    echo "export TF_VAR_bc_password=${bc_password}" >> .zsecrc
+    read -r -p "Enter BC API Key: " bc_api_key
+    echo "export TF_VAR_bc_api_key=${bc_api_key}" >> .zsecrc
+
+
+elif [[ "$network_static" == "y"* && "$dtype" == *"ha"* ]]; then
+    echo "Configuring Branch Connector network information..."
+    read -r -p "Enter BC #1 management IP address: " bc1_mgmt_ip 
+    if [[ "$bc1_mgmt_ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+        echo "Management IP $bc1_mgmt_ip entered"
+    else
+        echo "IP format incorrect"
+        exit 1
+    fi
+    read -r -p "Enter BC # 2 management IP address: " bc2_mgmt_ip 
+    if [[ "$bc2_mgmt_ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+        echo "Management IP $bc2_mgmt_ip entered"
+        echo "export TF_VAR_mgmt_ip='[\"$bc1_mgmt_ip\",\"$bc2_mgmt_ip\"]'" >> .zsecrc
+    else
+        echo "IP format incorrect"
+        exit 1
+    fi
+    if [[ "$dtype" == *"ac" ]]; then
+    read -r -p "Enter BC #1 Control IP address: " bc1_control_ip 
+    if [[ "$bc1_control_ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+        echo "Management IP $bc1_control_ip entered"
+    else
+        echo "IP format incorrect"
+        exit 1
+    fi
+    read -r -p "Enter BC #2 Control IP address: " bc2_control_ip
+    if [[ "$bc2_control_ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+        echo "Management IP $bc2_control_ip entered"
+        echo "export TF_VAR_control_ip='[\"$bc1_control_ip\",\"$bc2_control_ip\"]'" >> .zsecrc
+    else
+        echo "IP format incorrect"
+        exit 1
+    fi 
+    fi
+    read -r -p "Enter Netmask: " netmask
+    echo "export TF_VAR_mgmt_netmask='$netmask'" >> .zsecrc
+    if [[ "$dtype" == *"ac" ]]; then
+    echo "export TF_VAR_control_netmask='$netmask'" >> .zsecrc
+    fi
+    read -r -p "Enter Default Gateway: " gateway
+    echo "export TF_VAR_mgmt_gateway='$gateway'" >> .zsecrc
+    if [[ "$dtype" == *"ac" ]]; then
+    echo "export TF_VAR_control_gateway='$gateway'" >> .zsecrc
+    fi
+    read -r -p "Enter Primary DNS Server IP: " dns_primary
+    read -r -p "Enter Secondary DNS Server IP: " dns_secondary
+    echo "export TF_VAR_mgmt_dns_primary='$dns_primary'" >> .zsecrc
+    echo "export TF_VAR_mgmt_dns_secondary='$dns_secondary'" >> .zsecrc
+    read -r -p "Enter DNS suffix (e.g. corp.com): " dns_suffix
+    echo "export TF_VAR_dns_suffix='$dns_suffix'" >> .zsecrc
+    
+    read -r -p "Enter BC #1 Provisioning URL (E.g. connector.zscalerbeta.net/api/v1/provUrl?name=vm1_kvm_prov_url): " bc1_vm_prov_url
+    echo "Provisioning URL entered is: $bc1_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
+    read -r -p "Enter BC #2 Provisioning URL (E.g. connector.zscalerbeta.net/api/v1/provUrl?name=vm2_kvm_prov_url): " bc2_vm_prov_url
+    echo "Provisioning URL entered is: $bc2_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
+    echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\",\"$bc2_vm_prov_url\"]'" >> .zsecrc
+    read -r -p "Enter BC provisioning Username: " bc_username
+    echo "export TF_VAR_bc_username=${bc_username}" >> .zsecrc
+    read -r -p "Enter BC provisioning Password: " bc_password
+    echo "export TF_VAR_bc_password=${bc_password}" >> .zsecrc
+    read -r -p "Enter BC API Key: " bc_api_key
+    echo "export TF_VAR_bc_api_key=${bc_api_key}" >> .zsecrc
+
+    
+elif [[ "$network_static" == "n"* ]]; then
+    if [[ "$dtype" == *"ha"* ]]; then
+    read -r -p "Enter BC #1 Provisioning URL (E.g. connector.zscalerbeta.net/api/v1/provUrl?name=vm1_kvm_prov_url): " bc1_vm_prov_url
+    echo "Provisioning URL entered is: $bc1_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
+    read -r -p "Enter BC #2 Provisioning URL (E.g. connector.zscalerbeta.net/api/v1/provUrl?name=vm2_kvm_prov_url): " bc2_vm_prov_url
+    echo "Provisioning URL entered is: $bc2_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
+    echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\",\"$bc2_vm_prov_url\"]'" >> .zsecrc
+    elif [[ "$dtype" != *"ha"* ]]; then
+    read -r -p "Enter BC Provisioning URL (E.g. connector.zscalerbeta.net/api/v1/provUrl?name=kvm_prov_url): " bc1_vm_prov_url
+    echo "Provisioning URL entered is: $bc1_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
+    echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\"]'" >> .zsecrc
+    fi
+    read -r -p "Enter BC provisioning Username: " bc_username
+    echo "export TF_VAR_bc_username=${bc_username}" >> .zsecrc
+    read -r -p "Enter BC provisioning Password: " bc_password
+    echo "export TF_VAR_bc_password=${bc_password}" >> .zsecrc
+    read -r -p "Enter BC API Key: " bc_api_key
+    echo "export TF_VAR_bc_api_key=${bc_api_key}" >> .zsecrc
+fi
+
+
+
+fi
+
+# add local bin directory to PATH
+if ! grep -Fxq "export PATH=\${PATH}:\${PWD}/bin" .zsecrc; then
+    echo 'export PATH=${PATH}:${PWD}/bin' >> .zsecrc
+fi
+
+# add deployment type to .zsecrc for future runs
+if [[ "$oper" == "up" ]]; then
+    echo "Updating .zsecrc with dtype of $dtype"
+    sed -i'' -e '/dtype/d' .zsecrc
+    echo "export dtype=${dtype}" >> .zsecrc
+fi
+
+# initialize environment variables
+. ./.zsecrc
+
+# check for valid environment variables in .zsecrc
+if [ -z "$LIBVIRT_DEFAULT_URI" ]; then
+    echo "Libvirt access info is missing. Remove .zsecrc file and rerun $0 $1"
+    exit 1
+fi
+
+echo "Download terraform binary for $ostype if not present..."
+if [[ ! -e ./$dir/terraform ]]; then
+    curl -o ./$dir/terraform_${tversion}_${arch}.zip https://releases.hashicorp.com/terraform/$tversion/terraform_${tversion}_${os_str}_${arch}.zip
+    unzip ./$dir/terraform_${tversion}_${arch}.zip -d ./$dir
+    rm -f ./$dir/terraform_${tversion}_${arch}.zip
+fi
+
+if [[ "$oper" == "do" ]]; then
+    exit 1
+fi
+
+if [[ "$oper" == "up" ]]; then
+    echo "Bringing up Branch Connector..."
+    TF_DATA_DIR=../.terraform ./$dir/terraform -chdir="$dtype" init
+    if [[ "$AUTO_APPROVE" ]]; then
+        TF_DATA_DIR=../.terraform ./$dir/terraform -chdir="$dtype" apply -auto-approve
+    else
+        TF_DATA_DIR=../.terraform ./$dir/terraform -chdir="$dtype" apply
+    fi
+   
+
+elif [[ "$oper" == "destroy" ]]; then
+    echo "Destroying Branch Connector..."
+    TF_DATA_DIR=../.terraform ./$dir/terraform -chdir="$dtype" init
+    if [[ "$AUTO_APPROVE" ]]; then
+      TF_DATA_DIR=../.terraform ./$dir/terraform -chdir="$dtype" destroy -auto-approve
+    else
+      TF_DATA_DIR=../.terraform ./$dir/terraform -chdir="$dtype" destroy -compact-warnings
+    fi
+    echo "Removing Terraform files and directories..."
+    rm -rf bin 
+    rm -rf **/.terraform/* && rm -rf **/.terraform*
+	find . -type f -name '.terraform.lock.hcl' -delete
+    rm -rf .terraform* && rm -f terraform.tfstate*
+    rm -f *.pem && rm -f *.pem.pub
+    rm -f name_prefix random_string
+    rm -rf user.key user.crt
+    rm -rf systems.json setup-*.tar
+    rm -rf **/errorlog.txt
+now=$(date +'%Y-%m-%d-%H_%M_%S')
+    echo "archiving .zsecrc file to .zsecrc-${now}"
+    cp .zsecrc .zsecrc-${now}
+    rm -rf .zsecrc && rm -rf .zsecrc.bak
+fi
