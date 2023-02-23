@@ -185,6 +185,17 @@ variable "control_gateway" {
   default     = ""
 }
 
+variable "mgmt_name" {
+  type        = string
+  description = "Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0'"
+  default     = "vtnet0"
+}
+
+variable "control_name" {
+  type        = string
+  description = "Name of BC control interface if statically setting via provisioning url. Valid options are 'vtnet1' or 'igb1'"
+  default     = "vtnet1"
+}
 
 
 # ZPA Provider specific variables for App Connector Group and Provisioning Key creation

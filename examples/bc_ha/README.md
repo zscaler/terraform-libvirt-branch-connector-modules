@@ -86,6 +86,7 @@ From bc_ha directory execute:
 | <a name="input_mgmt_dns_secondary"></a> [mgmt\_dns\_secondary](#input\_mgmt\_dns\_secondary) | Secondary DNS server for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_mgmt_gateway"></a> [mgmt\_gateway](#input\_mgmt\_gateway) | Default gateway for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_mgmt_ip"></a> [mgmt\_ip](#input\_mgmt\_ip) | IP address for BC management interface if statically setting via provisioning url | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| <a name="input_mgmt_name"></a> [mgmt\_name](#input\_mgmt\_name) | Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0' | `string` | `"vtnet0"` | no |
 | <a name="input_mgmt_netmask"></a> [mgmt\_netmask](#input\_mgmt\_netmask) | Network mask for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_model_type"></a> [model\_type](#input\_model\_type) | The network interface model type. Supported types are virtio or e1000. Default is virtio | `string` | `"virtio"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | The name prefix for all your resources | `string` | `"zsbc"` | no |

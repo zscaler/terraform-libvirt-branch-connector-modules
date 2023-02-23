@@ -66,6 +66,7 @@ DEV:
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
 management_interface:
+  name: '${var.mgmt_name}'
   ip: '${element(var.mgmt_ip, 0)}'
   netmask: '${var.mgmt_netmask}'
   gateway: '${var.mgmt_gateway}'

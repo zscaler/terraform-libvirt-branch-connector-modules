@@ -160,3 +160,9 @@ variable "service_network_name" {
   description = "The name of the network for VM service network interfaces to be created in"
   default     = "default"
 }
+
+variable "mgmt_name" {
+  type        = string
+  description = "Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0'"
+  default     = "vtnet0"
+}

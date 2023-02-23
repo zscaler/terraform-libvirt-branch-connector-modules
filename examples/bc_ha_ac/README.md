@@ -99,6 +99,7 @@ From bc_ha_ac directory execute:
 | <a name="input_byo_provisioning_key_name"></a> [byo\_provisioning\_key\_name](#input\_byo\_provisioning\_key\_name) | Existing App Connector Provisioning Key name | `string` | `"provisioning-key-tf"` | no |
 | <a name="input_control_gateway"></a> [control\_gateway](#input\_control\_gateway) | Default gateway for BC/AC control interface if statically setting via provisioning url. Leave blank if using DHCP | `string` | `""` | no |
 | <a name="input_control_ip"></a> [control\_ip](#input\_control\_ip) | IP address for BC/AC control interface if statically setting via provisioning url. Leave blank if using DHCP | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| <a name="input_control_name"></a> [control\_name](#input\_control\_name) | Name of BC control interface if statically setting via provisioning url. Valid options are 'vtnet1' or 'igb1' | `string` | `"vtnet1"` | no |
 | <a name="input_control_netmask"></a> [control\_netmask](#input\_control\_netmask) | Network mask for BC/AC control interface if statically setting via provisioning url. Leave blank if using DHCP | `string` | `""` | no |
 | <a name="input_dns_suffix"></a> [dns\_suffix](#input\_dns\_suffix) | Primary DNS suffix for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_enrollment_cert"></a> [enrollment\_cert](#input\_enrollment\_cert) | Get name of ZPA enrollment cert to be used for App Connector provisioning | `string` | `"Connector"` | no |
@@ -108,6 +109,7 @@ From bc_ha_ac directory execute:
 | <a name="input_mgmt_dns_secondary"></a> [mgmt\_dns\_secondary](#input\_mgmt\_dns\_secondary) | Secondary DNS server for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_mgmt_gateway"></a> [mgmt\_gateway](#input\_mgmt\_gateway) | Default gateway for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_mgmt_ip"></a> [mgmt\_ip](#input\_mgmt\_ip) | IP address for BC management interface if statically setting via provisioning url | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| <a name="input_mgmt_name"></a> [mgmt\_name](#input\_mgmt\_name) | Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0' | `string` | `"vtnet0"` | no |
 | <a name="input_mgmt_netmask"></a> [mgmt\_netmask](#input\_mgmt\_netmask) | Network mask for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_model_type"></a> [model\_type](#input\_model\_type) | The network interface model type. Supported types are virtio or e1000. Default is virtio | `string` | `"virtio"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | The name prefix for all your resources | `string` | `"zsbc"` | no |

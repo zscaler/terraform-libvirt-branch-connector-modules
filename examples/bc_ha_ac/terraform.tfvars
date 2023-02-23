@@ -2,7 +2,7 @@
 ## Uncomment and change the below variables according to your specific environment
 
 #####################################################################################################################
-##### Variables 5-24 are populated automically if terraform is ran via ZSEC bash script.   ##### 
+##### Variables 5-27 are populated automically if terraform is ran via ZSEC bash script.   ##### 
 ##### Modifying the variables in this file will override any inputs from ZSEC             #####
 #####################################################################################################################
 
@@ -81,38 +81,46 @@
 ## 9. Determines which locals inputs to use in order to generate user-data file. Default is false for DHCP.
 ##    Uncomment if you will be manually setting IP address details below
 
-#static_management                              true
+#static_management                              = true
 
-## 10. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 10. Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0'
 
-#mgmt_ip                                        = ["10.0.0.5"]
+#mgmt_name                                      = "vtnet0"
 
-## 11. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 11. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+
+#mgmt_ip                                        = ["10.0.0.5","10.0.0.6"]
+
+## 12. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
 #mgmt_netmask                                   = "255.255.255.0"
 
-## 12. Default gateway for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 13. Default gateway for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
 #mgmt_gateway                                   = "10.0.0.1"
 
-## 13. Primary/Secondary DNS servers for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 14. Primary/Secondary DNS servers for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
 #mgmt_dns_primary                               = "10.0.0.100"
 #mgmt_dns_secondary                             = "10.0.0.101"
 
-## 14. Primary DNS suffix for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 15. Primary DNS suffix for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
 #dns_suffix                                     = "internal.corp.com"
 
-## 15. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 16. Name of BC control interface if statically setting via provisioning url. Valid options are 'vtnet1' or 'igb1'
 
-#control_ip                                     = ["10.0.0.6"]
+#control_name                                   = "vtnet1"
 
-## 16. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 17. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+
+#control_ip                                     = ["10.0.0.7","10.0.0.8"]
+
+## 18. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
 #control_netmask                                = "255.255.255.0"
 
-## 17. Default gateway for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
+## 19. Default gateway for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
 #control_gateway                                = "10.0.0.1"
 
@@ -120,12 +128,12 @@
 ##### Custom variables. Only change if required for your environment  #####
 #####################################################################################################################
 
-## 18. Name of the Zscaler Branch Connector qcow2 file to be used for deployment. This file name must be located in
+## 20. Name of the Zscaler Branch Connector qcow2 file to be used for deployment. This file name must be located in
 ##     examples/bc/bootstrap directory.
 
 #qcow2_name                                     = "branchconnector.qcow2"
 
-## 19. Branch Connector Instance size selection. Uncomment bc_instance_size line with desired vm size to change
+## 21. Branch Connector Instance size selection. Uncomment bc_instance_size line with desired vm size to change
 ##    (Default: "small") 
 ##    **** NOTE - This value is used by the vm module to determine how many network interfaces, CPU, and memory
 ##                are required for any VM. 
@@ -134,28 +142,28 @@
 #bc_instance_size                               = "medium"
 #bc_instance_size                               = "large" 
 
-## 20. Optional: Custome VM Hostname entries. Terraform auto populates values. Only set this if you need to override
+## 22. Optional: Custome VM Hostname entries. Terraform auto populates values. Only set this if you need to override
 ##     the automatically created names.
 
 #host_name                                      = ["replace-with-host-ip/name"]
 
-## 21. The name of the volume where VM and cloudinit disks will be stored
+## 23. The name of the volume where VM and cloudinit disks will be stored
 
 #pool_name                                      = "replace-with-pool-name"
 
-## 22. The name of the network for VM management network interface to be created in
+## 24. The name of the network for VM management network interface to be created in
 
-#management_network_name                           = "replace-with-network-name"
+#management_network_name                        = "replace-with-network-name"
 
-## 23. The name of the network for VM service network interfaces to be created in
+## 25. The name of the network for VM service network interfaces to be created in
 
 #service_network_name                           = "replace-with-network-name"
 
-## 24. Model type for the network interfaces. Default: virtio
+## 26. Model type for the network interfaces. Default: virtio
 
 #model_type                                     = "virtio"
 #model_type                                     = "e1000"
 
-## 25. Name of the base volume to create where Branch Connector image should reside
+## 27. Name of the base volume to create where Branch Connector image should reside
 
-#base_volume_name                       = zscaleros_bc_kvm
+#base_volume_name                               = zscaleros_bc_kvm
