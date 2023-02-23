@@ -103,6 +103,7 @@ From bc_ac directory execute:
 | <a name="input_dns_suffix"></a> [dns\_suffix](#input\_dns\_suffix) | Primary DNS suffix for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_enrollment_cert"></a> [enrollment\_cert](#input\_enrollment\_cert) | Get name of ZPA enrollment cert to be used for App Connector provisioning | `string` | `"Connector"` | no |
 | <a name="input_host_name"></a> [host\_name](#input\_host\_name) | The hostname that will be assigned to this domain resource in this network | `string` | `""` | no |
+| <a name="input_management_network_name"></a> [management\_network\_name](#input\_management\_network\_name) | The name of the network for VM management network interface to be created in | `string` | `"default"` | no |
 | <a name="input_mgmt_dns_primary"></a> [mgmt\_dns\_primary](#input\_mgmt\_dns\_primary) | Primary DNS server for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_mgmt_dns_secondary"></a> [mgmt\_dns\_secondary](#input\_mgmt\_dns\_secondary) | Secondary DNS server for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_mgmt_gateway"></a> [mgmt\_gateway](#input\_mgmt\_gateway) | Default gateway for BC management interface if statically setting via provisioning url | `string` | `""` | no |
@@ -110,13 +111,13 @@ From bc_ac directory execute:
 | <a name="input_mgmt_netmask"></a> [mgmt\_netmask](#input\_mgmt\_netmask) | Network mask for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_model_type"></a> [model\_type](#input\_model\_type) | The network interface model type. Supported types are virtio or e1000. Default is virtio | `string` | `"virtio"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | The name prefix for all your resources | `string` | `"zsbc"` | no |
-| <a name="input_network_name"></a> [network\_name](#input\_network\_name) | The name of the network for VM network interfaces to be created in | `string` | `"default"` | no |
 | <a name="input_pool_name"></a> [pool\_name](#input\_pool\_name) | The name of the volume where VM and cloudinit disks will be stored | `string` | `"default"` | no |
 | <a name="input_provisioning_key_association_type"></a> [provisioning\_key\_association\_type](#input\_provisioning\_key\_association\_type) | Specifies the provisioning key type for App Connectors or ZPA Private Service Edges. The supported values are CONNECTOR\_GRP and SERVICE\_EDGE\_GRP | `string` | `"CONNECTOR_GRP"` | no |
 | <a name="input_provisioning_key_enabled"></a> [provisioning\_key\_enabled](#input\_provisioning\_key\_enabled) | Whether the provisioning key is enabled or not. Default: true | `bool` | `true` | no |
 | <a name="input_provisioning_key_max_usage"></a> [provisioning\_key\_max\_usage](#input\_provisioning\_key\_max\_usage) | The maximum number of instances where this provisioning key can be used for enrolling an App Connector or Service Edge | `number` | `10` | no |
 | <a name="input_provisioning_key_name"></a> [provisioning\_key\_name](#input\_provisioning\_key\_name) | Custom name for App Connector Provisioning Key created | `string` | `""` | no |
 | <a name="input_qcow2_name"></a> [qcow2\_name](#input\_qcow2\_name) | Name of the Branch Connector qcow2 file | `string` | n/a | yes |
+| <a name="input_service_network_name"></a> [service\_network\_name](#input\_service\_network\_name) | The name of the network for VM service network interfaces to be created in | `string` | `"default"` | no |
 | <a name="input_static_management"></a> [static\_management](#input\_static\_management) | Determines which locals inputs to use in order to generate user-data file. Default is false for DHCP | `bool` | `false` | no |
 | <a name="input_tls_key_algorithm"></a> [tls\_key\_algorithm](#input\_tls\_key\_algorithm) | algorithm for tls\_private\_key resource | `string` | `"RSA"` | no |
 

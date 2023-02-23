@@ -143,15 +143,19 @@
 
 #pool_name                                      = "replace-with-pool-name"
 
-## 22. The name of the network for VM network interfaces to be created in
+## 22. The name of the network for VM management network interface to be created in
 
-#network_name                                   = "replace-with-network-name"
+#management_network_name                           = "replace-with-network-name"
 
-## 23. Model type for the network interfaces. Default: virtio
+## 23. The name of the network for VM service network interfaces to be created in
+
+#service_network_name                           = "replace-with-network-name"
+
+## 24. Model type for the network interfaces. Default: virtio
 
 #model_type                                     = "virtio"
 #model_type                                     = "e1000"
 
-## 24. Name of the base volume to create where Branch Connector image should reside
+## 25. Name of the base volume to create where Branch Connector image should reside
 
 #base_volume_name                       = zscaleros_bc_kvm

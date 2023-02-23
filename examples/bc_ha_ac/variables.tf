@@ -149,9 +149,15 @@ variable "pool_name" {
   default     = "default"
 }
 
-variable "network_name" {
+variable "management_network_name" {
   type        = string
-  description = "The name of the network for VM network interfaces to be created in"
+  description = "The name of the network for VM management network interface to be created in"
+  default     = "default"
+}
+
+variable "service_network_name" {
+  type        = string
+  description = "The name of the network for VM service network interfaces to be created in"
   default     = "default"
 }
 
