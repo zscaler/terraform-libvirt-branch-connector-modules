@@ -31,8 +31,7 @@ variable "bc_instance_size" {
   validation {
     condition = (
       var.bc_instance_size == "small" ||
-      var.bc_instance_size == "medium" ||
-      var.bc_instance_size == "large"
+      var.bc_instance_size == "medium"
     )
     error_message = "Input bc_instance_size must be set to an approved value."
   }
