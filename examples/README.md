@@ -45,9 +45,10 @@ Optional: Edit the terraform.tfvars file under your desired deployment type (ie:
 ```
 Deployment Type: (bc|bc_ha|bc_ac|bc_ac_ha):
 bc: Creates a fully autoprovisioned Branch Connector VM in KVM.
-bc_ha: Creates 2 Branch Connector VMs in active-passive HA configuration in KVM.
+bc_ha: Creates 2 Branch Connector VMs in active-passive HA configuration in KVM.  ***This will deploy both VMs on a single KVM host. For production deployments, it is recommended to deploy VMs on separate physical hypervisor hosts for resiliency.***
 bc_ac: Creates a fully autoprovisioned Branch Connector w/ integrated App Connector VM in KVM
-bc_ha_ac: Creates 2 Branch Connector w/ integrated App Connector VMs in active-passive HA configuration in KVM
+bc_ha_ac: Creates 2 Branch Connector w/ integrated App Connector VMs in active-passive HA configuration in KVM.  ***This will deploy both VMs on a single KVM host. For production deployments, it is recommended to deploy VMs on separate physical hypervisor hosts for resiliency.***
+```
 
 ## Destroying the cluster
 ```
@@ -55,6 +56,7 @@ cd examples
 - ./zsec destroy
 - verify all resources that will be destroyed and enter "yes" to confirm
 ```
+
 
 ## Notes
 ```

@@ -149,9 +149,15 @@ variable "pool_name" {
   default     = "default"
 }
 
-variable "network_name" {
+variable "management_network_name" {
   type        = string
-  description = "The name of the network for VM network interfaces to be created in"
+  description = "The name of the network for VM management network interface to be created in"
+  default     = "default"
+}
+
+variable "service_network_name" {
+  type        = string
+  description = "The name of the network for VM service network interfaces to be created in"
   default     = "default"
 }
 
@@ -179,6 +185,17 @@ variable "control_gateway" {
   default     = ""
 }
 
+variable "mgmt_name" {
+  type        = string
+  description = "Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0'"
+  default     = "vtnet0"
+}
+
+variable "control_name" {
+  type        = string
+  description = "Name of BC control interface if statically setting via provisioning url. Valid options are 'vtnet1' or 'igb1'"
+  default     = "vtnet1"
+}
 
 
 # ZPA Provider specific variables for App Connector Group and Provisioning Key creation

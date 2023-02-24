@@ -27,12 +27,15 @@ Our Deployment scripts are leveraging Terraform v1.1.9 that includes full binary
 - provider registry.terraform.io/providers/zscaler/zpa v2.5.x
 
 ### KVM requirements
+```
 1. A valid connection URI to connect to the KVM hypervisor. For full more information on connection URI methods, click [here.](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs)
 
 Note:<br>
 On Ubuntu distros SELinux is enforced by qemu even if it is disabled globally, this might cause unexpected `Could not open '/var/lib/libvirt/images/<FILE_NAME>': Permission denied` errors. Double check that `security_driver = "none"` is uncommented in `/etc/libvirt/qemu.conf` and issue `sudo systemctl restart libvirt-bin` to restart the daemon.<br>
+```
 
 ### Zscaler requirements
+```
 2. A valid Zscaler Branch Connector provisioning URL generated from the Branch Connector Portal
 3. Zscaler Branch Connector Credentials (api key, username, password)
 4. Download the Branch Connector qcow2 image file and save to the desired deployment type 'bootstrap' directory.
@@ -44,6 +47,7 @@ On Ubuntu distros SELinux is enforced by qemu even if it is disabled globally, t
 - Client Secret
 - Customer ID
 7. (Optional) An existing App Connector Group and Provisioning Key. Otherwise, you can follow the prompts in the examples terraform.tfvars to create a new Connector Group and Provisioning Key
+```
 
 ###  **Starter Deployment Template**
 
@@ -57,6 +61,10 @@ Use the [**Starter Deployment Template with App Connector**](examples/bc_ac) to 
 
 Use the [**Starter Deployment Template with High-Availability**](examples/bc_ha) to deploy your Branch Connector in an existing KVM environment. This template achieves high availability between two Branch Connectors.
 
+***This will deploy both VMs on a single KVM host. For production deployments, it is recommended to deploy VMs on separate physical hypervisor hosts for resiliency.***
+
 ### **Starter Deployment Template with App Connector and High-Availability**
 
 Use the [**Starter Deployment Template with App Connector and High-Availability**](examples/bc_ha_ac) to deploy your combined Branch Connector + App Connector in an existing KVM environment. This template achieves high availability between two Branch Connectors.
+
+***This will deploy both VMs on a single KVM host. For production deployments, it is recommended to deploy VMs on separate physical hypervisor hosts for resiliency.***

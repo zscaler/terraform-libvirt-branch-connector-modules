@@ -219,10 +219,15 @@ read -r -p "Enter base volume name that will created to upload the qcow2 image t
 base_volume_name=${base_volume_name_input:-$base_volume_name_default}
 echo "export TF_VAR_base_volume_name='$base_volume_name'" >> .zsecrc
 
-network_name_default=default
-read -r -p "Enter the name of the KVM Network to associate VM NICs to (Default is "$network_name_default"): " network_name_input
-network_name=${network_name_input:-$network_name_default}
-echo "export TF_VAR_network_name='$network_name'" >> .zsecrc
+management_network_name_default=default
+read -r -p "Enter the name of the KVM Network to associate Management interface to (Default is "$management_network_name_default"): " management_network_name_input
+management_network_name=${management_network_name_input:-$management_network_name_default}
+echo "export TF_VAR_management_network_name='$management_network_name'" >> .zsecrc
+
+service_network_name_default=default
+read -r -p "Enter the name of the KVM Network to associate Service interface to (Default is "$service_network_name_default"): " service_network_name_input
+service_network_name=${service_network_name_input:-$service_network_name_default}
+echo "export TF_VAR_service_network_name='$service_network_name'" >> .zsecrc
 
 network_static_default=no
 while true; do

@@ -45,7 +45,7 @@ resource "libvirt_domain" "bc_vm" {
   # Management Interface
   network_interface {
     hostname       = "${var.name_prefix}-vm-${count.index + 1}-mgmt-nic-${var.resource_tag}"
-    network_name   = var.network_name
+    network_name   = var.management_network_name
     wait_for_lease = true
   }
 
@@ -53,7 +53,7 @@ resource "libvirt_domain" "bc_vm" {
   dynamic "network_interface" {
     for_each = local.control_nic
     content {
-      network_name   = var.network_name
+      network_name   = var.management_network_name
       wait_for_lease = false
     }
   }
@@ -62,7 +62,7 @@ resource "libvirt_domain" "bc_vm" {
   dynamic "network_interface" {
     for_each = local.service_nic_count
     content {
-      network_name   = var.network_name
+      network_name   = var.service_network_name
       wait_for_lease = false
     }
   }
@@ -81,7 +81,7 @@ resource "libvirt_domain" "bc_vm" {
   console {
     type        = "pty"
     target_port = "0"
-    target_type = "virtio"
+    target_type = "serial"
   }
 
   xml {

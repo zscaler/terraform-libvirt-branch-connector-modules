@@ -66,6 +66,7 @@ DEV:
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
 management_interface:
+  name: '${var.mgmt_name}'
   ip: '${element(var.mgmt_ip, 0)}'
   netmask: '${var.mgmt_netmask}'
   gateway: '${var.mgmt_gateway}'
@@ -96,17 +97,18 @@ locals {
 #    automatic upload to datastore(s) or from existing path/name directly. 
 ################################################################################
 module "bc_vm" {
-  source           = "../../modules/terraform-zsbc-bcvm-libvirt"
-  bc_count         = var.bc_count
-  name_prefix      = var.name_prefix
-  resource_tag     = random_string.suffix.result
-  user_data        = local.user_data_selected
-  host_name        = var.host_name
-  local_qcow2_path = fileexists("bootstrap/${var.qcow2_name}") ? "${abspath(path.root)}/bootstrap/${var.qcow2_name}" : "qcow2 file name and/or path is wrong. Please fix and re-run terraform"
-  bc_instance_size = var.bc_instance_size
-  base_volume_name = var.base_volume_name
-  model_type       = var.model_type
-  pool_name        = var.pool_name
-  network_name     = var.network_name
-  autostart        = var.autostart
+  source                  = "../../modules/terraform-zsbc-bcvm-libvirt"
+  bc_count                = var.bc_count
+  name_prefix             = var.name_prefix
+  resource_tag            = random_string.suffix.result
+  user_data               = local.user_data_selected
+  host_name               = var.host_name
+  local_qcow2_path        = fileexists("bootstrap/${var.qcow2_name}") ? "${abspath(path.root)}/bootstrap/${var.qcow2_name}" : "qcow2 file name and/or path is wrong. Please fix and re-run terraform"
+  bc_instance_size        = var.bc_instance_size
+  base_volume_name        = var.base_volume_name
+  model_type              = var.model_type
+  pool_name               = var.pool_name
+  management_network_name = var.management_network_name
+  service_network_name    = var.service_network_name
+  autostart               = var.autostart
 }

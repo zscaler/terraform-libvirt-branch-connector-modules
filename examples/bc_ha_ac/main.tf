@@ -79,10 +79,12 @@ DEV:
   username: ${var.bc_username}
   password: ${var.bc_password}
 management_interface:
+  name: '${var.mgmt_name}'
   ip: '${element(var.mgmt_ip, 0)}'
   netmask: '${var.mgmt_netmask}'
   gateway: '${var.mgmt_gateway}'
 control_interface:
+  name: '${var.control_name}'
   ip: '${element(var.control_ip, 0)}'
   netmask: '${var.control_netmask}'
   gateway: '${var.control_gateway}'
@@ -100,10 +102,12 @@ DEV:
   username: ${var.bc_username}
   password: ${var.bc_password}
 management_interface:
-  ip: '${element(var.mgmt_ip, 1)}'
+  name: '${var.mgmt_name}'
+  ip: '${element(var.mgmt_ip, 0)}'
   netmask: '${var.mgmt_netmask}'
   gateway: '${var.mgmt_gateway}'
 control_interface:
+  name: '${var.control_name}'
   ip: '${element(var.control_ip, 0)}'
   netmask: '${var.control_netmask}'
   gateway: '${var.control_gateway}'
@@ -142,20 +146,21 @@ locals {
 #    automatic upload to datastore(s) or from existing path/name directly. 
 ################################################################################
 module "bc_vm" {
-  source           = "../../modules/terraform-zsbc-bcvm-libvirt"
-  bc_count         = var.bc_count
-  name_prefix      = var.name_prefix
-  resource_tag     = random_string.suffix.result
-  user_data        = local.user_data_selected
-  host_name        = var.host_name
-  local_qcow2_path = fileexists("bootstrap/${var.qcow2_name}") ? "${abspath(path.root)}/bootstrap/${var.qcow2_name}" : "qcow2 file name and/or path is wrong. Please fix and re-run terraform"
-  bc_instance_size = var.bc_instance_size
-  base_volume_name = var.base_volume_name
-  model_type       = var.model_type
-  ac_enabled       = var.ac_enabled
-  pool_name        = var.pool_name
-  network_name     = var.network_name
-  autostart        = var.autostart
+  source                  = "../../modules/terraform-zsbc-bcvm-libvirt"
+  bc_count                = var.bc_count
+  name_prefix             = var.name_prefix
+  resource_tag            = random_string.suffix.result
+  user_data               = local.user_data_selected
+  host_name               = var.host_name
+  local_qcow2_path        = fileexists("bootstrap/${var.qcow2_name}") ? "${abspath(path.root)}/bootstrap/${var.qcow2_name}" : "qcow2 file name and/or path is wrong. Please fix and re-run terraform"
+  bc_instance_size        = var.bc_instance_size
+  base_volume_name        = var.base_volume_name
+  model_type              = var.model_type
+  ac_enabled              = var.ac_enabled
+  pool_name               = var.pool_name
+  management_network_name = var.management_network_name
+  service_network_name    = var.service_network_name
+  autostart               = var.autostart
 }
 
 
