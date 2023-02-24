@@ -52,8 +52,8 @@ variable "bc_instance_size" {
 locals {
   control_nic        = var.ac_enabled == true ? ["1"] : []
   small_service_nic  = var.bc_instance_size == "small" ? ["1"] : []
-  medium_service_nic = var.bc_instance_size == "medium" ? ["1", "2"] : []
-  large_service_nic  = var.bc_instance_size == "large" ? ["1", "2", "3"] : []
+  medium_service_nic = var.bc_instance_size == "medium" ? ["1", "2", "3"] : []
+  large_service_nic  = var.bc_instance_size == "large" ? ["1", "2", "3", "4"] : []
 
   service_nic_count = coalescelist(local.small_service_nic, local.medium_service_nic, local.large_service_nic)
 }
