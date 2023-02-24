@@ -51,11 +51,11 @@ variable "bc_instance_size" {
 #Locals matrix to define the number of vNICs to assign to a VM given any combination of size/features
 locals {
   control_nic        = var.ac_enabled == true ? ["1"] : []
-  small_service_nic  = var.bc_instance_size == "small" ? ["1"] : [""]
-  medium_service_nic = var.bc_instance_size == "small" ? ["1", "2"] : [""]
-  large_service_nic  = var.bc_instance_size == "small" ? ["1", "2", "3"] : [""]
+  small_service_nic  = var.bc_instance_size == "small" ? ["1"] : []
+  medium_service_nic = var.bc_instance_size == "medium" ? ["1", "2"] : []
+  large_service_nic  = var.bc_instance_size == "large" ? ["1", "2", "3"] : []
 
-  service_nic_count = coalesce(local.small_service_nic, local.medium_service_nic, local.large_service_nic)
+  service_nic_count = coalescelist(local.small_service_nic, local.medium_service_nic, local.large_service_nic)
 }
 
 #Locals matrix to define the number of vCPU to assign to a VM given any combination of size/features
