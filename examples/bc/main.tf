@@ -33,6 +33,7 @@ resource "local_file" "private_key" {
 ################################################################################
 locals {
   userdata_dhcp = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 0)}
 DEV:
@@ -57,6 +58,7 @@ resource "local_sensitive_file" "dhcp_user_data_file" {
 ################################################################################
 locals {
   userdata_static = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 0)}
 DEV:

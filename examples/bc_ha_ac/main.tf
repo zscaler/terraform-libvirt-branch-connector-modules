@@ -33,6 +33,7 @@ resource "local_file" "private_key" {
 ################################################################################
 locals {
   bc_1_userdata_dhcp = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 0)}
 DEV:
@@ -41,8 +42,13 @@ DEV:
   password: ${var.bc_password}
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
+runcmd:
+  - service zpaconnector_linux stop
+  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
+  - service zpaconnector_linux start
 USERDATA
   bc_2_userdata_dhcp = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 1)}
 DEV:
@@ -51,6 +57,10 @@ DEV:
   password: ${var.bc_password}
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
+runcmd:
+  - service zpaconnector_linux stop
+  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
+  - service zpaconnector_linux start
 USERDATA
 
   combined_userdata_dhcp = [
@@ -72,6 +82,7 @@ resource "local_sensitive_file" "dhcp_user_data_file" {
 ################################################################################
 locals {
   bc_1_userdata_static = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 0)}
 DEV:
@@ -93,8 +104,13 @@ resolv_conf:
   domain: '${var.dns_suffix}'
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
+runcmd:
+  - service zpaconnector_linux stop
+  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
+  - service zpaconnector_linux start
 USERDATA
   bc_2_userdata_static = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 1)}
 DEV:
@@ -116,6 +132,10 @@ resolv_conf:
   domain: '${var.dns_suffix}'
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
+runcmd:
+  - service zpaconnector_linux stop
+  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
+  - service zpaconnector_linux start
 USERDATA
 
   combined_userdata_static = [

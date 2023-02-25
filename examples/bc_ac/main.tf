@@ -33,6 +33,7 @@ resource "local_file" "private_key" {
 ################################################################################
 locals {
   userdata_dhcp = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 0)}
 DEV:
@@ -41,6 +42,10 @@ DEV:
   password: ${var.bc_password}
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
+runcmd:
+  - service zpaconnector_linux stop
+  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
+  - service zpaconnector_linux start
 USERDATA
 }
 
@@ -57,6 +62,7 @@ resource "local_sensitive_file" "dhcp_user_data_file" {
 ################################################################################
 locals {
   userdata_static = <<USERDATA
+#cloud-config
 ZSCALER:
   cc_url: ${element(var.bc_vm_prov_url, 0)}
 DEV:
@@ -78,6 +84,10 @@ control_interface:
 resolv_conf:
   nameservers: ['${var.mgmt_dns_primary}', '${var.mgmt_dns_secondary}']
   domain: '${var.dns_suffix}'
+runcmd:
+  - service zpaconnector_linux stop
+  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
+  - service zpaconnector_linux start
 USERDATA
 }
 
