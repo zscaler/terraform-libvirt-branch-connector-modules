@@ -77,7 +77,6 @@
 
 #bc_instance_size                       = "small"
 #bc_instance_size                       = "medium"
-#bc_instance_size                       = "large" 
 
 ## 14. Optional: Custome VM Hostname entries. Terraform auto populates values. Only set this if you need to override
 ##     the automatically created names.

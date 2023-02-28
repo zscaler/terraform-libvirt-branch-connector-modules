@@ -185,7 +185,6 @@ if [[ "$dtype" == *"ac" ]]; then
 fi
 
 bc_instance_size_default=small
-if [[ "$dtype" == *"ac" ]]; then
 while true; do
     read -r -p "Enter BC Instance Size. Valid input = small or medium. This needs to match the size chosen in the BC provisioning template [Default=$bc_instance_size_default]: " bc_instance_size_input
     bc_instance_size=${bc_instance_size_input:-$bc_instance_size_default}
@@ -200,22 +199,6 @@ while true; do
       ;;
     esac
 done
-else
-while true; do
-    read -r -p "Enter BC Instance Size. Valid input = small, medium, or large. This needs to match the size chosen in the BC provisioning template [Default=$bc_instance_size_default]: " bc_instance_size_input
-    bc_instance_size=${bc_instance_size_input:-$bc_instance_size_default}
-    case $bc_instance_size in
-      small|medium|large)
-          echo "Branch Connector size: ${bc_instance_size}"
-          echo "export TF_VAR_bc_instance_size=${bc_instance_size}" >> .zsecrc
-          break
-      ;;
-      *)
-          echo "Invalid Branch Connector size: ${bc_instance_size}."
-      ;;
-    esac
-done
-fi
 
 if [[ "$dtype" != *"ha"* ]]; then
     echo "Deployment type is $dtype. Input infrastructure details for one Branch Connector..."

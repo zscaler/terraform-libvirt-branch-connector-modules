@@ -41,8 +41,7 @@ variable "bc_instance_size" {
   validation {
     condition = (
       var.bc_instance_size == "small" ||
-      var.bc_instance_size == "medium" ||
-      var.bc_instance_size == "large"
+      var.bc_instance_size == "medium"
     )
     error_message = "Input bc_instance_size must be set to an approved value."
   }
@@ -53,9 +52,8 @@ locals {
   control_nic        = var.ac_enabled == true ? ["1"] : []
   small_service_nic  = var.bc_instance_size == "small" ? ["1"] : []
   medium_service_nic = var.bc_instance_size == "medium" ? ["1", "2", "3"] : []
-  large_service_nic  = var.bc_instance_size == "large" ? ["1", "2", "3", "4"] : []
 
-  service_nic_count = coalescelist(local.small_service_nic, local.medium_service_nic, local.large_service_nic)
+  service_nic_count = coalescelist(local.small_service_nic, local.medium_service_nic)
 }
 
 #Locals matrix to define the number of vCPU to assign to a VM given any combination of size/features
@@ -63,11 +61,9 @@ locals {
   small_bc_cpu     = var.bc_instance_size == "small" && var.ac_enabled == false ? 2 : ""
   small_bc_ac_cpu  = var.bc_instance_size == "small" && var.ac_enabled == true ? 4 : ""
   medium_bc_cpu    = var.bc_instance_size == "medium" && var.ac_enabled == false ? 4 : ""
-  medium_bc_ac_cpu = var.bc_instance_size == "medium" && var.ac_enabled == true ? 8 : ""
-  large_bc_cpu     = var.bc_instance_size == "large" && var.ac_enabled == false ? 6 : ""
-  large_bc_ac_cpu  = var.bc_instance_size == "large" && var.ac_enabled == true ? 10 : ""
+  medium_bc_ac_cpu = var.bc_instance_size == "medium" && var.ac_enabled == true ? 6 : ""
 
-  vm_cpus = coalesce(local.small_bc_cpu, local.small_bc_ac_cpu, local.medium_bc_cpu, local.medium_bc_ac_cpu, local.large_bc_cpu, local.large_bc_ac_cpu)
+  vm_cpus = coalesce(local.small_bc_cpu, local.small_bc_ac_cpu, local.medium_bc_cpu, local.medium_bc_ac_cpu)
 }
 
 #Locals matrix to define the amount of memory to assign to a VM given any combination of size/features
@@ -75,11 +71,9 @@ locals {
   small_bc_mem     = var.bc_instance_size == "small" && var.ac_enabled == false ? 4096 : ""
   small_bc_ac_mem  = var.bc_instance_size == "small" && var.ac_enabled == true ? 16384 : ""
   medium_bc_mem    = var.bc_instance_size == "medium" && var.ac_enabled == false ? 8192 : ""
-  medium_bc_ac_mem = var.bc_instance_size == "medium" && var.ac_enabled == true ? 24576 : ""
-  large_bc_mem     = var.bc_instance_size == "large" && var.ac_enabled == false ? 16384 : ""
-  large_bc_ac_mem  = var.bc_instance_size == "large" && var.ac_enabled == true ? 32768 : ""
+  medium_bc_ac_mem = var.bc_instance_size == "medium" && var.ac_enabled == true ? 32768 : ""
 
-  vm_memory = coalesce(local.small_bc_mem, local.small_bc_ac_mem, local.medium_bc_mem, local.medium_bc_ac_mem, local.large_bc_mem, local.large_bc_ac_mem)
+  vm_memory = coalesce(local.small_bc_mem, local.small_bc_ac_mem, local.medium_bc_mem, local.medium_bc_ac_mem)
 }
 
 variable "local_qcow2_path" {
