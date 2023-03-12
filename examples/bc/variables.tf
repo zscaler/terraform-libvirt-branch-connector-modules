@@ -172,3 +172,9 @@ variable "mgmt_name" {
     error_message = "Input mgmt_name must be set to either vtnet0 or igb0."
   }
 }
+
+variable "byo_ssh_key" {
+  type        = string
+  description = "user entered SSH Public Key"
+  default     = ""
+}

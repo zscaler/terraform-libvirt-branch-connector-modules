@@ -206,7 +206,31 @@ if [[ "$dtype" != *"ha"* ]]; then
 elif [[ "$dtype" == *"ha"* ]]; then
     echo "Deployment type is $dtype. Input infrastructure details for two Branch Connectors..."
     echo "export TF_VAR_bc_count=2" >> .zsecrc
-fi    
+fi
+
+byo_ssh_key_default=no
+while true; do
+echo "By default, Terraform will generate a new SSH Private/Public Key Pair that can be used to access the Branch Connector..."
+read -r -p "Enter "yes" if you would like to supply your own SSH Public Key [Default=$byo_ssh_key_default]: " byo_ssh_key_input
+byo_ssh_key=${byo_ssh_key_input:-$byo_ssh_key_default}
+case $byo_ssh_key in 
+	    yes|y ) 
+        read -r -p "Paste the SSH Public Key here: " user_ssh_key
+            if ! [[ "$user_ssh_key" =~ ^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+/]+[=]{0,3}( .*)?$ ]] 
+            then 
+                echo "SSH Key Pair entered is not valid. Please check format/spacing is correct starting with "ssh-rsa AAAA" and re-run ./zsec up" 
+                exit 1 
+            fi
+        echo "export TF_VAR_byo_ssh_key='$user_ssh_key'" >> .zsecrc
+        break
+        ;;
+	    no|n )
+        echo "Terraform will generate a new SSH Key and write the file to this working directory..."
+        break
+        ;;
+	    * ) echo "invalid response. Please enter yes or no";;
+        esac
+    done
 
 storage_pool_default=default
 read -r -p "Enter the name of the storage pool to upload qcow2 image to (Default is "$storage_pool_default"): " storage_pool_input

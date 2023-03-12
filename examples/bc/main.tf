@@ -16,12 +16,14 @@ resource "random_string" "suffix" {
 ################################################################################
 # private key for login
 resource "tls_private_key" "key" {
+  count     = var.byo_ssh_key == "" ? 1 : 0
   algorithm = var.tls_key_algorithm
 }
 
 # write private key to local pem file
 resource "local_file" "private_key" {
-  content         = tls_private_key.key.private_key_pem
+  count           = var.byo_ssh_key == "" ? 1 : 0
+  content         = tls_private_key.key[0].private_key_pem
   filename        = "../${var.name_prefix}-key-${random_string.suffix.result}.pem"
   file_permission = "0600"
 }
@@ -41,7 +43,7 @@ DEV:
   username: ${var.bc_username}
   password: ${var.bc_password}
 ssh_authorized_keys:
-    - ${tls_private_key.key.public_key_openssh}
+    - ${try(tls_private_key.key[0].public_key_openssh, var.byo_ssh_key)}
 USERDATA
 }
 
@@ -66,7 +68,7 @@ DEV:
   username: ${var.bc_username}
   password: ${var.bc_password}
 ssh_authorized_keys:
-    - ${tls_private_key.key.public_key_openssh}
+    - ${try(tls_private_key.key[0].public_key_openssh, var.byo_ssh_key)}
 management_interface:
   name: '${var.mgmt_name}'
   ip: '${element(var.mgmt_ip, 0)}'

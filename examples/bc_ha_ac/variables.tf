@@ -210,6 +210,12 @@ variable "control_name" {
   }
 }
 
+variable "byo_ssh_key" {
+  type        = string
+  description = "user entered SSH Public Key"
+  default     = ""
+}
+
 
 # ZPA Provider specific variables for App Connector Group and Provisioning Key creation
 variable "byo_provisioning_key" {
