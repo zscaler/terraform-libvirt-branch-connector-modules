@@ -25,6 +25,15 @@ On Ubuntu distros SELinux is enforced by qemu even if it is disabled globally, t
 
 See: [Zscaler Zero Trust SD-WAN Datasheet](https://www.zscaler.com/resources/data-sheets/zscaler-zero-trust-sd-wan.pdf) for more information.
 
+Terraform maps two user defined variables (bc_instance_size, ac_enabled) to locals to automatically configure the necessary CPU, Memory, Disk, and NIC total for Branch Connector. Please refer to the table below to understand the resource requirements and allocation based on the variable inputs (columns 1 and 2).
+
+| (tf var) bc_instance_size | (tf var) ac_enabled | CPU | Memory (GB) | Disk (GB) | NICs |
+|:-------------------------:|:-------------------:|:---:|:-----------:|:---------:|:----:|
+| small                     | false               | 2   | 4           | 128       | 2    |
+| small                     | true                | 4   | 16          | 128       | 3    |
+| medium                    | false               | 4   | 8           | 128       | 4    |
+| medium                    | true                | 6   | 32          | 128       | 5    |
+
 ## Deploying the cluster
 (The automated tool can run only from MacOS and Linux. If required to run from a Windows workstation, the preferred method is executing within a Windows Subsystem Linux (WSL) environment).   
 
