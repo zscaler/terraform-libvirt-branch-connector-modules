@@ -63,11 +63,11 @@
 
 ## 6. Zscaler provisioning user account
 
-#bc_username                                    = "replace-with-bac-admin-name"
+#bc_username                                    = "replace-with-bc-deployment-user"
 
 ## 7. Zscaler provisioning user password
 
-#bc_password                                    = "replace-with-bac-admin-password"
+#bc_password                                    = "replace-with-bc-deployment-password"
 
 ## 8. Zscaler Branch Connector API Key
 

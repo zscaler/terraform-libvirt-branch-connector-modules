@@ -16,11 +16,11 @@
 
 ## 2. Zscaler provisioning user account
 
-#bc_username                            = "replace-with-bac-admin-name"
+#bc_username                            = "replace-with-bc-deployment-user"
 
 ## 3. Zscaler provisioning user password
 
-#bc_password                            = "replace-with-bac-admin-password"
+#bc_password                            = "replace-with-bc-deployment-password"
 
 ## 4. Zscaler Branch Connector API Key
 
@@ -89,11 +89,11 @@
 
 ## 16. The name of the network for VM management network interface to be created in
 
-#management_network_name                           = "replace-with-network-name"
+#management_network_name                = "replace-with-network-name"
 
 ## 17. The name of the network for VM service network interfaces to be created in
 
-#service_network_name                           = "replace-with-network-name"
+#service_network_name                   = "replace-with-network-name"
 
 ## 18. Model type for the network interfaces. Default: virtio
 

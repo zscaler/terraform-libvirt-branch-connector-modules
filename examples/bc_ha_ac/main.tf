@@ -104,10 +104,9 @@ resolv_conf:
   domain: '${var.dns_suffix}'
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
-runcmd:
-  - service zpaconnector_linux stop
-  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
-  - service zpaconnector_linux start
+zscaler_app_connector:
+  enable: "yes"
+  provisioning_key: "${module.zpa_provisioning_key.provisioning_key}"
 USERDATA
   bc_2_userdata_static = <<USERDATA
 #cloud-config
@@ -132,10 +131,9 @@ resolv_conf:
   domain: '${var.dns_suffix}'
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
-runcmd:
-  - service zpaconnector_linux stop
-  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
-  - service zpaconnector_linux start
+zscaler_app_connector:
+  enable: "yes"
+  provisioning_key: "${module.zpa_provisioning_key.provisioning_key}"
 USERDATA
 
   combined_userdata_static = [

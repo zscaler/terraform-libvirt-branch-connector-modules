@@ -42,10 +42,9 @@ DEV:
   password: ${var.bc_password}
 ssh_authorized_keys:
     - ${tls_private_key.key.public_key_openssh}
-runcmd:
-  - service zpaconnector_linux stop
-  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
-  - service zpaconnector_linux start
+zscaler_app_connector:
+  enable: "yes"
+  provisioning_key: "${module.zpa_provisioning_key.provisioning_key}"
 USERDATA
 }
 
@@ -84,10 +83,9 @@ control_interface:
 resolv_conf:
   nameservers: ['${var.mgmt_dns_primary}', '${var.mgmt_dns_secondary}']
   domain: '${var.dns_suffix}'
-runcmd:
-  - service zpaconnector_linux stop
-  - echo "${module.zpa_provisioning_key.provisioning_key}" > /compat/linux/opt/zscaler/var/provision_key
-  - service zpaconnector_linux start
+zscaler_app_connector:
+  enable: "yes"
+  provisioning_key: "${module.zpa_provisioning_key.provisioning_key}"
 USERDATA
 }
 

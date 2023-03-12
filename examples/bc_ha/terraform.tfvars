@@ -12,15 +12,15 @@
 
 ## 1. Zscaler Branch Connector Provisioning URL E.g. connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url
 
-#bc_vm_prov_url                         = ["connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url"]
+#bc_vm_prov_url                         = ["connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url_bc_1","connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url_bc_2"]
 
 ## 2. Zscaler provisioning user account
 
-#bc_username                            = "replace-with-bac-admin-name"
+#bc_username                            = "replace-with-bc-deployment-user"
 
 ## 3. Zscaler provisioning user password
 
-#bc_password                            = "replace-with-bac-admin-password"
+#bc_password                            = "replace-with-bc-deployment-password"
 
 ## 4. Zscaler Branch Connector API Key
 
@@ -42,7 +42,7 @@
 
 ## 7. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
-#mgmt_ip                                = ["10.0.0.5","10.0.0.6"]
+#mgmt_ip                                = ["10.0.0.5","10.0.0.6"]  #Where 10.0.0.5 is BC-1 and 10.0.0.6 is BC-2
 
 ## 8. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 

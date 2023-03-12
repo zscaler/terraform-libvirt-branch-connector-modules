@@ -164,4 +164,11 @@ variable "mgmt_name" {
   type        = string
   description = "Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0'"
   default     = "vtnet0"
+  validation {
+    condition = (
+      var.mgmt_name == "vtnet0" ||
+      var.mgmt_name == "igb0"
+    )
+    error_message = "Input mgmt_name must be set to either vtnet0 or igb0."
+  }
 }

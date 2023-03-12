@@ -118,7 +118,7 @@ done
 fi
 break
 done
-    echo "export TF_VAR_qcow2_name='${qcow2_name}'" > .zsecrc
+    echo "export TF_VAR_qcow2_name='$qcow2_name'" > .zsecrc
     
     libvirt_uri_default="qemu:///system"
     read -r -p "Enter Libvirt uri (Default: $libvirt_uri_default): " libvirt_uri_input
@@ -171,7 +171,7 @@ if [[ "$dtype" == *"ac" ]]; then
 	    yes|y ) 
         read -r -p "Enter the name of your existing App Connector provisioning key: " byo_provisioning_key_name
         echo "export TF_VAR_byo_provisioning_key=true" >> .zsecrc
-        echo "export TF_VAR_byo_provisioning_key_name=${byo_provisioning_key_name}" >> .zsecrc
+        echo "export TF_VAR_byo_provisioning_key_name='$byo_provisioning_key_name'" >> .zsecrc
         break
         ;;
 	    no|n )
@@ -190,8 +190,8 @@ while true; do
     bc_instance_size=${bc_instance_size_input:-$bc_instance_size_default}
     case $bc_instance_size in
       small|medium)
-          echo "Branch Connector size: ${bc_instance_size}"
-          echo "export TF_VAR_bc_instance_size=${bc_instance_size}" >> .zsecrc
+          echo "Branch Connector size: $bc_instance_size"
+          echo "export TF_VAR_bc_instance_size='$bc_instance_size'" >> .zsecrc
           break
       ;;
       *)
@@ -254,7 +254,7 @@ while true; do
     case $model_type in
     virtio|e1000 )
     echo "Configuring interfaces as $model_type"
-    echo "export TF_VAR_model_type=$model_type" >> .zsecrc
+    echo "export TF_VAR_model_type='$model_type'" >> .zsecrc
     break
     ;;
 	* ) echo "invalid response. Please enter virtio or e1000";;
@@ -292,6 +292,36 @@ if [[ "$network_static" == "y"* && "$dtype" != *"ha"* ]]; then
     if [[ "$dtype" == *"ac" ]]; then
     echo "export TF_VAR_control_gateway='$gateway'" >> .zsecrc
     fi
+
+mgmt_name_default="vtnet0"
+    while true; do
+        read -r -p "Enter logical name for management interface (vtnet0 or igb0) Default=$mgmt_name_default: " mgmt_name_input
+        mgmt_name=${mgmt_name_input:-$mgmt_name_default}
+        case $mgmt_name in
+        vtnet0|igb0 )
+        echo "Configuring management interface as $mgmt_name"
+        echo "export TF_VAR_mgmt_name='$mgmt_name'" >> .zsecrc
+        break
+        ;;
+	    * ) echo "invalid response. Please enter vtnet0 or igb0";;
+        esac
+    done
+
+if [[ "$dtype" == *"ac" ]]; then
+control_name_default="vtnet1"
+    while true; do
+        read -r -p "Enter logical name for control interface (vtnet1 or igb1) Default=$control_name_default: " control_name_input
+        control_name=${control_name_input:-$control_name_default}
+        case $control_name in
+        vtnet1|igb1 )
+        echo "Configuring control interface as $control_name"
+        echo "export TF_VAR_mgmt_name='$control_name'" >> .zsecrc
+        break
+        ;;
+	    * ) echo "invalid response. Please enter vtnet0 or igb0";;
+        esac
+    done
+fi
     read -r -p "Enter Primary DNS Server IP: " dns_primary
     read -r -p "Enter Secondary DNS Server IP: " dns_secondary
     echo "export TF_VAR_mgmt_dns_primary='$dns_primary'" >> .zsecrc
@@ -303,11 +333,11 @@ if [[ "$network_static" == "y"* && "$dtype" != *"ha"* ]]; then
     echo "Provisioning URL entered is: $bc1_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
     echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\"]'" >> .zsecrc
     read -r -p "Enter BC provisioning Username: " bc_username
-    echo "export TF_VAR_bc_username=${bc_username}" >> .zsecrc
+    echo "export TF_VAR_bc_username='$bc_username'" >> .zsecrc
     read -r -p "Enter BC provisioning Password: " bc_password
-    echo "export TF_VAR_bc_password=${bc_password}" >> .zsecrc
+    echo "export TF_VAR_bc_password='$bc_password'" >> .zsecrc
     read -r -p "Enter BC API Key: " bc_api_key
-    echo "export TF_VAR_bc_api_key=${bc_api_key}" >> .zsecrc
+    echo "export TF_VAR_bc_api_key='$bc_api_key'" >> .zsecrc
 
 
 elif [[ "$network_static" == "y"* && "$dtype" == *"ha"* ]]; then
@@ -354,6 +384,36 @@ elif [[ "$network_static" == "y"* && "$dtype" == *"ha"* ]]; then
     if [[ "$dtype" == *"ac" ]]; then
     echo "export TF_VAR_control_gateway='$gateway'" >> .zsecrc
     fi
+
+mgmt_name_default="vtnet0"
+    while true; do
+        read -r -p "Enter logical name for management interface (vtnet0 or igb0) Default=$mgmt_name_default: " mgmt_name_input
+        mgmt_name=${mgmt_name_input:-$mgmt_name_default}
+        case $mgmt_name in
+        vtnet0|igb0 )
+        echo "Configuring management interface as $mgmt_name"
+        echo "export TF_VAR_mgmt_name='$mgmt_name'" >> .zsecrc
+        break
+        ;;
+	    * ) echo "invalid response. Please enter vtnet0 or igb0";;
+        esac
+    done
+
+if [[ "$dtype" == *"ac" ]]; then
+control_name_default="vtnet1"
+    while true; do
+        read -r -p "Enter logical name for control interface (vtnet1 or igb1) Default=$control_name_default: " control_name_input
+        control_name=${control_name_input:-$control_name_default}
+        case $control_name in
+        vtnet1|igb1 )
+        echo "Configuring control interface as $control_name"
+        echo "export TF_VAR_mgmt_name='$control_name'" >> .zsecrc
+        break
+        ;;
+	    * ) echo "invalid response. Please enter vtnet0 or igb0";;
+        esac
+    done
+fi
     read -r -p "Enter Primary DNS Server IP: " dns_primary
     read -r -p "Enter Secondary DNS Server IP: " dns_secondary
     echo "export TF_VAR_mgmt_dns_primary='$dns_primary'" >> .zsecrc
@@ -367,11 +427,11 @@ elif [[ "$network_static" == "y"* && "$dtype" == *"ha"* ]]; then
     echo "Provisioning URL entered is: $bc2_vm_prov_url. Make sure this matches the BC Instance Size $bc_instance_size chosen."
     echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\",\"$bc2_vm_prov_url\"]'" >> .zsecrc
     read -r -p "Enter BC provisioning Username: " bc_username
-    echo "export TF_VAR_bc_username=${bc_username}" >> .zsecrc
+    echo "export TF_VAR_bc_username='$bc_username'" >> .zsecrc
     read -r -p "Enter BC provisioning Password: " bc_password
-    echo "export TF_VAR_bc_password=${bc_password}" >> .zsecrc
+    echo "export TF_VAR_bc_password='$bc_password'" >> .zsecrc
     read -r -p "Enter BC API Key: " bc_api_key
-    echo "export TF_VAR_bc_api_key=${bc_api_key}" >> .zsecrc
+    echo "export TF_VAR_bc_api_key='$bc_api_key'" >> .zsecrc
 
     
 elif [[ "$network_static" == "n"* ]]; then
@@ -387,14 +447,12 @@ elif [[ "$network_static" == "n"* ]]; then
     echo "export TF_VAR_bc_vm_prov_url='[\"$bc1_vm_prov_url\"]'" >> .zsecrc
     fi
     read -r -p "Enter BC provisioning Username: " bc_username
-    echo "export TF_VAR_bc_username=${bc_username}" >> .zsecrc
+    echo "export TF_VAR_bc_username='$bc_username'" >> .zsecrc
     read -r -p "Enter BC provisioning Password: " bc_password
-    echo "export TF_VAR_bc_password=${bc_password}" >> .zsecrc
+    echo "export TF_VAR_bc_password='$bc_password'" >> .zsecrc
     read -r -p "Enter BC API Key: " bc_api_key
-    echo "export TF_VAR_bc_api_key=${bc_api_key}" >> .zsecrc
+    echo "export TF_VAR_bc_api_key='$bc_api_key'" >> .zsecrc
 fi
-
-
 
 fi
 
