@@ -339,7 +339,7 @@ control_name_default="vtnet1"
         case $control_name in
         vtnet1|igb1 )
         echo "Configuring control interface as $control_name"
-        echo "export TF_VAR_mgmt_name='$control_name'" >> .zsecrc
+        echo "export TF_VAR_control_name='$control_name'" >> .zsecrc
         break
         ;;
 	    * ) echo "invalid response. Please enter vtnet0 or igb0";;
