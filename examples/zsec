@@ -135,22 +135,22 @@ if [[ "$dtype" == *"ac" ]]; then
         case $zpa_cloud in
         PROD*|prod*|PRODUCTION|production)
           echo "ZPA Cloud selected: PRODUCTION"
-          echo "export ZPA_CLOUD=\"PRODUCTION\"" >> .zspserc
+          echo "export ZPA_CLOUD=\"PRODUCTION\"" >> .zsecrc
           break
           ;;
         BETA|beta|b|B)
           echo "ZPA Cloud selected: BETA"
-          echo "export ZPA_CLOUD=\"BETA\"" >> .zspserc
+          echo "export ZPA_CLOUD=\"BETA\"" >> .zsecrc
           break
           ;;
         GOV|gov|g|G)
           echo "ZPA Cloud selected: GOV"
-          echo "export ZPA_CLOUD=\"GOV\"" >> .zspserc
+          echo "export ZPA_CLOUD=\"GOV\"" >> .zsecrc
           break
           ;;
         PREVIEW|preview|pre*|PRE*)
           echo "ZPA Cloud selected: PREVIEW"
-          echo "export ZPA_CLOUD=\"PREVIEW\"" >> .zspserc
+          echo "export ZPA_CLOUD=\"PREVIEW\"" >> .zsecrc
           break
           ;;
           *)
