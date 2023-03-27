@@ -2,6 +2,15 @@
 
 This module can be used to deploy a customized Zscaler Branch Connector VM from a local qcow2 image. It includes userdata cloudinit ISO disk creation for a complete, zero-touch provisioning process.
 
+Terraform maps two user defined variables (bc_instance_size, ac_enabled) to locals to automatically configure the necessary CPU, Memory, Disk, and NIC total for Branch Connector. Please refer to the table below to understand the resource requirements and allocation based on the variable inputs (columns 1 and 2).
+
+| (tf var) bc_instance_size | (tf var) ac_enabled | CPU | Memory (GB) | Disk (GB) | NICs |
+|:-------------------------:|:-------------------:|:---:|:-----------:|:---------:|:----:|
+| small                     | false               | 2   | 4           | 128       | 2    |
+| small                     | true                | 4   | 16          | 128       | 3    |
+| medium                    | false               | 4   | 8           | 128       | 4    |
+| medium                    | true                | 6   | 32          | 128       | 5    |
+
 Caveats:<br>
 On Ubuntu distros SELinux is enforced by qemu even if it is disabled globally, this might cause unexpected `Could not open '/var/lib/libvirt/images/<FILE_NAME>': Permission denied` errors. Double check that `security_driver = "none"` is uncommented in `/etc/libvirt/qemu.conf` and issue `sudo systemctl restart libvirt-bin` to restart the daemon.<br>
 

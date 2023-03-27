@@ -2,7 +2,7 @@
 ## Uncomment and change the below variables according to your specific environment
 
 #####################################################################################################################
-##### Variables 1-19 are populated automically if terraform is ran via ZSEC bash script.   ##### 
+##### Variables 1-20 are populated automically if terraform is ran via ZSEC bash script.   ##### 
 ##### Modifying the variables in this file will override any inputs from ZSEC             #####
 #####################################################################################################################
 
@@ -16,11 +16,11 @@
 
 ## 2. Zscaler provisioning user account
 
-#bc_username                            = "replace-with-bac-admin-name"
+#bc_username                            = "replace-with-bc-deployment-user"
 
 ## 3. Zscaler provisioning user password
 
-#bc_password                            = "replace-with-bac-admin-password"
+#bc_password                            = "replace-with-bc-deployment-password"
 
 ## 4. Zscaler Branch Connector API Key
 
@@ -77,7 +77,6 @@
 
 #bc_instance_size                       = "small"
 #bc_instance_size                       = "medium"
-#bc_instance_size                       = "large" 
 
 ## 14. Optional: Custome VM Hostname entries. Terraform auto populates values. Only set this if you need to override
 ##     the automatically created names.
@@ -90,11 +89,11 @@
 
 ## 16. The name of the network for VM management network interface to be created in
 
-#management_network_name                           = "replace-with-network-name"
+#management_network_name                = "replace-with-network-name"
 
 ## 17. The name of the network for VM service network interfaces to be created in
 
-#service_network_name                           = "replace-with-network-name"
+#service_network_name                   = "replace-with-network-name"
 
 ## 18. Model type for the network interfaces. Default: virtio
 
@@ -104,3 +103,8 @@
 ## 19. Name of the base volume to create where Branch Connector image should reside
 
 #base_volume_name                       = zscaleros_bc_kvm
+
+## 20. By default, Terraform will generate a new SSH Private/Public Key Pair that can be used to access the Branch Connector VM.
+##     Uncomment and enter an SSH Public Key if you would rather use your own and not create a new one.
+
+#byo_ssh_key                            = "ssh-rsa AAAA etc"

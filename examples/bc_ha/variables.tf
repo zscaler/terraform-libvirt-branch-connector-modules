@@ -31,8 +31,7 @@ variable "bc_instance_size" {
   validation {
     condition = (
       var.bc_instance_size == "small" ||
-      var.bc_instance_size == "medium" ||
-      var.bc_instance_size == "large"
+      var.bc_instance_size == "medium"
     )
     error_message = "Input bc_instance_size must be set to an approved value."
   }
@@ -165,4 +164,17 @@ variable "mgmt_name" {
   type        = string
   description = "Name of BC management interface if statically setting via provisioning url. Valid options are 'vtnet0' or 'igb0'"
   default     = "vtnet0"
+  validation {
+    condition = (
+      var.mgmt_name == "vtnet0" ||
+      var.mgmt_name == "igb0"
+    )
+    error_message = "Input mgmt_name must be set to either vtnet0 or igb0."
+  }
+}
+
+variable "byo_ssh_key" {
+  type        = string
+  description = "user entered SSH Public Key"
+  default     = ""
 }

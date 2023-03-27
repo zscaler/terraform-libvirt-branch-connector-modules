@@ -10,20 +10,43 @@
 Note:<br>
 On Ubuntu distros SELinux is enforced by qemu even if it is disabled globally, this might cause unexpected `Could not open '/var/lib/libvirt/images/<FILE_NAME>': Permission denied` errors. Double check that `security_driver = "none"` is uncommented in `/etc/libvirt/qemu.conf` and issue `sudo systemctl restart libvirt-bin` to restart the daemon.<br>
 
+### Terraform client requirements
+2. If executing Terraform via the "zsec" wrapper bash script, it is advised that you run from a MacOS or Linux workstation. Minimum installed application requirements to successfully from the script are:
+- bash
+- curl
+- unzip
+<br>
+<br>
+Even if you are running Terraform manually, there are still the following local application dependencies for the libvirt Terraform provider:
+- mkisofs
+- xsltproc
+<br>
+<br>
+These can all be installed via your distribution app installer. ie: sudo apt install bash curl unzip mkisofs xsltproc
+
 ### Zscaler requirements
-2. A valid Zscaler Branch Connector provisioning URL generated from the Branch Connector Portal
-3. Zscaler Branch Connector Credentials (api key, username, password)
-4. Download the Branch Connector qcow2 image file and save to the desired deployment type 'bootstrap' directory.
+3. A valid Zscaler Branch Connector provisioning URL generated from the Branch Connector Portal
+4. Zscaler Branch Connector Credentials (api key, username, password)
+5. Download the Branch Connector qcow2 image file and save to the desired deployment type 'bootstrap' directory.
 
 ### Branch Connector + App Connector requirements
-5. A valid Zscaler Private Access subscription and portal access
-6. Zscaler ZPA API Keys. Details on how to find and generate ZPA API keys can be located [here:](https://help.zscaler.com/zpa/about-api-keys)
+6. A valid Zscaler Private Access subscription and portal access
+7. Zscaler ZPA API Keys. Details on how to find and generate ZPA API keys can be located [here:](https://help.zscaler.com/zpa/about-api-keys)
 - Client ID
 - Client Secret
 - Customer ID
-7. (Optional) An existing App Connector Group and Provisioning Key. Otherwise, you can follow the prompts in the examples terraform.tfvars to create a new Connector Group and Provisioning Key
+8. (Optional) An existing App Connector Group and Provisioning Key. Otherwise, you can follow the prompts in the examples terraform.tfvars to create a new Connector Group and Provisioning Key
 
 See: [Zscaler Zero Trust SD-WAN Datasheet](https://www.zscaler.com/resources/data-sheets/zscaler-zero-trust-sd-wan.pdf) for more information.
+
+Terraform maps two user defined variables (bc_instance_size, ac_enabled) to locals to automatically configure the necessary CPU, Memory, Disk, and NIC total for Branch Connector. Please refer to the table below to understand the resource requirements and allocation based on the variable inputs (columns 1 and 2).
+
+| (tf var) bc_instance_size | (tf var) ac_enabled | CPU | Memory (GB) | Disk (GB) | NICs |
+|:-------------------------:|:-------------------:|:---:|:-----------:|:---------:|:----:|
+| small                     | false               | 2   | 4           | 128       | 2    |
+| small                     | true                | 4   | 16          | 128       | 3    |
+| medium                    | false               | 4   | 8           | 128       | 4    |
+| medium                    | true                | 6   | 32          | 128       | 5    |
 
 ## Deploying the cluster
 (The automated tool can run only from MacOS and Linux. If required to run from a Windows workstation, the preferred method is executing within a Windows Subsystem Linux (WSL) environment).   

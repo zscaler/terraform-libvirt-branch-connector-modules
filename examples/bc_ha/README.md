@@ -79,6 +79,7 @@ From bc_ha directory execute:
 | <a name="input_bc_password"></a> [bc\_password](#input\_bc\_password) | Admin Password for Branch Connector Portal authentication | `string` | `""` | no |
 | <a name="input_bc_username"></a> [bc\_username](#input\_bc\_username) | Admin Username for Branch Connector Portal authentication | `string` | `""` | no |
 | <a name="input_bc_vm_prov_url"></a> [bc\_vm\_prov\_url](#input\_bc\_vm\_prov\_url) | Zscaler Branch Connector Provisioning URL | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| <a name="input_byo_ssh_key"></a> [byo\_ssh\_key](#input\_byo\_ssh\_key) | user entered SSH Public Key | `string` | `""` | no |
 | <a name="input_dns_suffix"></a> [dns\_suffix](#input\_dns\_suffix) | Primary DNS suffix for BC management interface if statically setting via provisioning url | `string` | `""` | no |
 | <a name="input_host_name"></a> [host\_name](#input\_host\_name) | The hostname that will be assigned to this domain resource in this network | `string` | `""` | no |
 | <a name="input_management_network_name"></a> [management\_network\_name](#input\_management\_network\_name) | The name of the network for VM management network interface to be created in | `string` | `"default"` | no |

@@ -2,7 +2,7 @@
 ## Uncomment and change the below variables according to your specific environment
 
 #####################################################################################################################
-##### Variables 5-27 are populated automically if terraform is ran via ZSEC bash script.   ##### 
+##### Variables 5-28 are populated automically if terraform is ran via ZSEC bash script.   ##### 
 ##### Modifying the variables in this file will override any inputs from ZSEC             #####
 #####################################################################################################################
 
@@ -59,15 +59,15 @@
 
 ## 5. Zscaler Branch Connector Provisioning URL E.g. connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url
 
-#bc_vm_prov_url                                 = ["connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url"]
+#bc_vm_prov_url                         = ["connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url_bc_1","connector.zscaler.net/api/v1/provUrl?name=kvm_prov_url_bc_2"]
 
 ## 6. Zscaler provisioning user account
 
-#bc_username                                    = "replace-with-bac-admin-name"
+#bc_username                                    = "replace-with-bc-deployment-user"
 
 ## 7. Zscaler provisioning user password
 
-#bc_password                                    = "replace-with-bac-admin-password"
+#bc_password                                    = "replace-with-bc-deployment-password"
 
 ## 8. Zscaler Branch Connector API Key
 
@@ -89,7 +89,7 @@
 
 ## 11. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
-#mgmt_ip                                        = ["10.0.0.5","10.0.0.6"]
+#mgmt_ip                                        = ["10.0.0.5","10.0.0.6"]  #Where 10.0.0.5 is BC-1 and 10.0.0.6 is BC-2
 
 ## 12. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
@@ -114,7 +114,7 @@
 
 ## 17. IP address for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
-#control_ip                                     = ["10.0.0.7","10.0.0.8"]
+#control_ip                                     = ["10.0.0.7","10.0.0.8"]  #Where 10.0.0.7 is BC-1 and 10.0.0.8 is BC-2
 
 ## 18. Network mask for BC management interface if statically setting via provisioning url. Leave blank if using DHCP
 
@@ -140,7 +140,6 @@
 
 #bc_instance_size                               = "small"
 #bc_instance_size                               = "medium"
-#bc_instance_size                               = "large" 
 
 ## 22. Optional: Custome VM Hostname entries. Terraform auto populates values. Only set this if you need to override
 ##     the automatically created names.
@@ -167,3 +166,8 @@
 ## 27. Name of the base volume to create where Branch Connector image should reside
 
 #base_volume_name                               = zscaleros_bc_kvm
+
+## 28. By default, Terraform will generate a new SSH Private/Public Key Pair that can be used to access the Branch Connector VM.
+##     Uncomment and enter an SSH Public Key if you would rather use your own and not create a new one.
+
+#byo_ssh_key                            = "ssh-rsa AAAA etc"
