@@ -127,61 +127,9 @@ done
 
 
 if [[ "$dtype" == *"ac" ]]; then
-    echo "App Connector integrated deployment detected. Enter ZPA credentials..."
-    zpa_cloud_default=PRODUCTION
-    while true; do
-        read -r -p "Enter ZPA Cloud Name (PRODUCTION, BETA, GOV, or PREVIEW) [Default=$zpa_cloud_default]: " zpa_cloud_input
-        zpa_cloud=${zpa_cloud_input:-$zpa_cloud_default}
-        case $zpa_cloud in
-        PROD*|prod*|PRODUCTION|production)
-          echo "ZPA Cloud selected: PRODUCTION"
-          echo "export ZPA_CLOUD=\"PRODUCTION\"" >> .zsecrc
-          break
-          ;;
-        BETA|beta|b|B)
-          echo "ZPA Cloud selected: BETA"
-          echo "export ZPA_CLOUD=\"BETA\"" >> .zsecrc
-          break
-          ;;
-        GOV|gov|g|G)
-          echo "ZPA Cloud selected: GOV"
-          echo "export ZPA_CLOUD=\"GOV\"" >> .zsecrc
-          break
-          ;;
-        PREVIEW|preview|pre*|PRE*)
-          echo "ZPA Cloud selected: PREVIEW"
-          echo "export ZPA_CLOUD=\"PREVIEW\"" >> .zsecrc
-          break
-          ;;
-          *)
-          echo "Invalid Cloud. Supported values are PRODUCTION, BETA, GOV, or PREVIEW: ${zpa_cloud}."
-      ;;
-        esac
-    done
-    read -r -p "Enter ZPA Client ID: " zpa_client_id
-    echo "export ZPA_CLIENT_ID='$zpa_client_id'" >> .zsecrc
-    read -r -p "Enter ZPA Client Secret: " zpa_client_secret
-    echo "export ZPA_CLIENT_SECRET='$zpa_client_secret'" >> .zsecrc
-    read -r -p "Enter ZPA Customer ID: " zpa_customer_id
-    echo "export ZPA_CUSTOMER_ID='$zpa_customer_id'" >> .zsecrc
-
-    while true; do
-        read -r -p "Do you already have an App Connector provisioning key to use? [yes/no] " prov_key_response
-        case $prov_key_response in 
-	    yes|y ) 
-        read -r -p "Enter the name of your existing App Connector provisioning key: " byo_provisioning_key_name
-        echo "export TF_VAR_byo_provisioning_key=true" >> .zsecrc
-        echo "export TF_VAR_byo_provisioning_key_name='$byo_provisioning_key_name'" >> .zsecrc
-        break
-        ;;
-	    no|n )
-        echo "Terraform will be creating a new App Connector Group and provisioning key"
-        echo "Before proceeding, make sure you have entered all variable requirements from steps 1 and 2 in $dtype/terraform.tfvars"
-        break
-        ;;
-	    * ) echo "invalid response. Please enter yes or no";;
-        esac
-    done
+    echo "App Connector integrated deployment detected..."
+    read -r -p "Enter your existing App Connector provisioning key: " ac_provisioning_key
+    echo "export TF_VAR_ac_provisioning_key='$ac_provisioning_key'" >> .zsecrc
 fi
 
 bc_instance_size_default=small
